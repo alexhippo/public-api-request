@@ -18,7 +18,21 @@ fetch('https://randomuser.me/api/?results=12&nat=us')
   .then(data => {
     generateEmployeeGallery(data);
     generateEmployeeModal(data);
-  });
+  })
+  .then(() => {
+    Array.from(document.getElementsByClassName('card')).forEach((card) => {
+      card.addEventListener('click', (event) => {
+        document.querySelector(`div.modal-container#${event.currentTarget.id}`).style.display = 'block';
+      });
+    });
+
+    // @todo: Close when clicking outside of the modal too
+    Array.from(document.getElementsByClassName('modal-close-btn')).forEach((closeButton) => {
+      closeButton.addEventListener('click', (event) => {
+        event.currentTarget.parentElement.parentElement.style.display = 'none';
+      })
+    })
+  })
 
 /**
 * Search container
@@ -36,10 +50,9 @@ searchContainer.insertAdjacentHTML('beforeend', `
 */
 const gallery = document.getElementById('gallery');
 function generateEmployeeGallery(data) {
-  console.log(data);
-  data.results.map((employee) => {
+  data.results.map((employee, index) => {
     gallery.insertAdjacentHTML('beforeend', `
-      <div class="card">
+      <div class="card" id="employee-${index}">
           <div class="card-img-container">
               <img class="card-img" src="${employee.picture.medium}" alt="Profile Picture of ${employee.name.first} ${employee.name.last}">
           </div>
@@ -50,17 +63,18 @@ function generateEmployeeGallery(data) {
           </div>
       </div>
       `);
-  });
-}
+  })
+};
+
 
 /**
  * Modal
  */
 //@todo: Split cell number into proper formatting
 function generateEmployeeModal(data) {
-  data.results.map((employee) => {
+  data.results.map((employee, index) => {
     document.querySelector('body').insertAdjacentHTML('beforeend', `
-      <div class="modal-container">
+      <div class="modal-container" id="employee-${index}">
           <div class="modal">
               <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
               <div class="modal-info-container">
@@ -82,6 +96,6 @@ function generateEmployeeModal(data) {
           </div>
       </div>
     `);
-  })
+  });
 }
 
