@@ -4,6 +4,19 @@
  */
 
 /**
+* Search container
+*/
+const searchContainer = document.querySelector('.search-container');
+searchContainer.insertAdjacentHTML('beforeend', `
+    <form action="#" method="get">
+    <input type="search" id="search-input" class="search-input" placeholder="Search...">
+    <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">
+    </form>
+`);
+const searchBar = document.querySelector('#search-input');
+const searchButton = document.querySelector('#search-submit');
+
+/**
  * Fetch 12 random users from the Random User Generator API
  */
 // @todo: Catch unforseen errors
@@ -16,8 +29,14 @@ function fetchData(url) {
 fetch('https://randomuser.me/api/?results=12&nat=us')
   .then(response => response.json())
   .then(data => {
-    generateEmployeeGallery(data);
-    generateEmployeeModal(data);
+    generateEmployeeGallery(data.results);
+    generateEmployeeModal(data.results);
+
+    searchButton.addEventListener('click', () => {
+      searchEmployees(searchBar.value, data.results).then((data) => {
+        showSearchResults(data)
+      })
+    });
   })
   .then(() => {
     Array.from(document.getElementsByClassName('card')).forEach((card) => {
@@ -31,26 +50,48 @@ fetch('https://randomuser.me/api/?results=12&nat=us')
       closeButton.addEventListener('click', (event) => {
         event.currentTarget.parentElement.parentElement.style.display = 'none';
       })
-    })
+    });
   })
 
-/**
-* Search container
+/*
+* Search for employees based off the searchInput and return the search results
+* @param  {String} searchInput - the user's search term
+* @param  {Array} employees - employee data e.g. `data.results`
 */
-const searchContainer = document.querySelector('.search-container');
-searchContainer.insertAdjacentHTML('beforeend', `
-    <form action="#" method="get">
-    <input type="search" id="search-input" class="search-input" placeholder="Search...">
-    <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">
-    </form>
-`);
+async function searchEmployees(searchInput, employees) {
+  let searchResults = employees.filter((employee) => {
+    return employee.name.first.toLowerCase().includes(searchInput.toLowerCase()) || employee.name.last.toLowerCase().includes(searchInput.toLowerCase());
+  })
+  return searchResults;
+};
+
+/*
+* Display and paginate the results returned by `searchEmployees()`
+* If there are no search results, a "No results found" style message will be displayed
+* If there is no searchInput (e.g. search was cleared by the user), the full employee list will be displayed by default
+* @param {Array} searchResults - search result data
+*/
+function showSearchResults(searchResults) {
+  // Clear gallery HTML
+  Array.from(gallery.children).forEach((employee) => employee.style.display = 'none');
+  if (searchResults.length > 0) {
+    generateEmployeeGallery(searchResults);
+  } else {
+    gallery.insertAdjacentHTML('beforeend', `
+      <div>
+        <h3>Sorry, we couldn't find a employee with that name. Please check your spelling or try a different name.</h3>
+      </div>
+      `
+    )
+  }
+};
 
 /**
 * Gallery
 */
 const gallery = document.getElementById('gallery');
 function generateEmployeeGallery(data) {
-  data.results.map((employee, index) => {
+  data.map((employee, index) => {
     gallery.insertAdjacentHTML('beforeend', `
       <div class="card" id="employee-${index}">
           <div class="card-img-container">
@@ -70,9 +111,8 @@ function generateEmployeeGallery(data) {
 /**
  * Modal
  */
-//@todo: Split cell number into proper formatting
 function generateEmployeeModal(data) {
-  data.results.map((employee, index) => {
+  data.map((employee, index) => {
     document.querySelector('body').insertAdjacentHTML('beforeend', `
       <div class="modal-container" id="employee-${index}">
           <div class="modal">
