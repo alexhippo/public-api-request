@@ -10,7 +10,7 @@ const searchContainer = document.querySelector('.search-container');
 searchContainer.insertAdjacentHTML('beforeend', `
     <form action="#" method="get">
     <input type="search" id="search-input" class="search-input" placeholder="Search...">
-    <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">
+    <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit" aria-label="Search for employees">
     </form>
 `);
 const searchBar = document.querySelector('#search-input');
@@ -26,8 +26,7 @@ function fetchData(url) {
     .catch(error => console.log('Looks like there was a problem', error));
 };
 
-fetch('https://randomuser.me/api/?results=12&nat=us')
-  .then(response => response.json())
+fetchData('https://randomuser.me/api/?results=12&nat=us')
   .then(data => {
     generateEmployeeGallery(data.results);
     generateEmployeeModal(data.results);
@@ -72,17 +71,21 @@ async function searchEmployees(searchInput, employees) {
 * @param {Array} searchResults - search result data
 */
 function showSearchResults(searchResults) {
-  // Clear gallery HTML
-  Array.from(gallery.children).forEach((employee) => employee.style.display = 'none');
-  if (searchResults.length > 0) {
-    generateEmployeeGallery(searchResults);
+  if (searchBar.value) {
+    // Hide all employees from the gallery first
+    Array.from(gallery.children).forEach((employee) => employee.style.display = 'none');
+    if (searchResults.length > 0) {
+      searchResults.forEach((employee) => document.querySelector(`.card#employee-${employee.login.uuid}`).style.display = '');
+    } else {
+      gallery.insertAdjacentHTML('beforeend', `
+        <div>
+          <h3>Sorry, we couldn't find a employee with that name. Please check your spelling or try a different name.</h3>
+        </div>
+        `
+      )
+    }
   } else {
-    gallery.insertAdjacentHTML('beforeend', `
-      <div>
-        <h3>Sorry, we couldn't find a employee with that name. Please check your spelling or try a different name.</h3>
-      </div>
-      `
-    )
+    Array.from(gallery.children).forEach((employee) => employee.style.display = '');
   }
 };
 
@@ -91,9 +94,9 @@ function showSearchResults(searchResults) {
 */
 const gallery = document.getElementById('gallery');
 function generateEmployeeGallery(data) {
-  data.map((employee, index) => {
+  data.map((employee) => {
     gallery.insertAdjacentHTML('beforeend', `
-      <div class="card" id="employee-${index}">
+      <div class="card" id="employee-${employee.login.uuid}">
           <div class="card-img-container">
               <img class="card-img" src="${employee.picture.medium}" alt="Profile Picture of ${employee.name.first} ${employee.name.last}">
           </div>
@@ -104,7 +107,7 @@ function generateEmployeeGallery(data) {
           </div>
       </div>
       `);
-  })
+  });
 };
 
 
@@ -114,7 +117,7 @@ function generateEmployeeGallery(data) {
 function generateEmployeeModal(data) {
   data.map((employee, index) => {
     document.querySelector('body').insertAdjacentHTML('beforeend', `
-      <div class="modal-container" id="employee-${index}">
+      <div class="modal-container" id="employee-${employee.login.uuid}">
           <div class="modal">
               <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
               <div class="modal-info-container">
@@ -137,5 +140,4 @@ function generateEmployeeModal(data) {
       </div>
     `);
   });
-}
-
+};
