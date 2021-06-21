@@ -17,7 +17,9 @@ const searchBar = document.querySelector('#search-input');
 const searchButton = document.querySelector('#search-submit');
 
 /**
- * Fetch 12 random users from the Random User Generator API
+ * Fetch data from a specified API endpoint
+ * @param {String} url - the API endpoint to fetch
+ * @returns API response
  */
 // @todo: Catch unforseen errors
 function fetchData(url) {
@@ -52,7 +54,9 @@ fetchData('https://randomuser.me/api/?results=12&nat=us')
     });
   })
 
-/*
+
+
+/**
 * Search for employees based off the searchInput and return the search results
 * @param  {String} searchInput - the user's search term
 * @param  {Array} employees - employee data e.g. `data.results`
@@ -64,12 +68,12 @@ async function searchEmployees(searchInput, employees) {
   return searchResults;
 };
 
-/*
+/**
 * Display and paginate the results returned by `searchEmployees()`
 * If there are no search results, a "No results found" style message will be displayed
 * If there is no searchInput (e.g. search was cleared by the user), the full employee list will be displayed by default
-* @param {Array} searchResults - search result data
-*/
+ * @param {Array} searchResults 
+ */
 function showSearchResults(searchResults) {
   if (searchBar.value) {
     // Hide all employees from the gallery first
@@ -110,7 +114,6 @@ function generateEmployeeGallery(data) {
   });
 };
 
-
 /**
  * Modal
  */
@@ -131,8 +134,6 @@ function generateEmployeeModal(data) {
                   <p class="modal-text">Birthday: ${new Date(employee.dob.date).toLocaleDateString('en-US')}</p>
               </div>
           </div>
-  
-          // IMPORTANT: Below is only for exceeds tasks 
           <div class="modal-btn-container">
               <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
               <button type="button" id="modal-next" class="modal-next btn">Next</button>
