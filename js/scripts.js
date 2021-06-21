@@ -43,6 +43,10 @@ fetchData('https://randomuser.me/api/?results=12&nat=us')
     Array.from(document.getElementsByClassName('card')).forEach((card) => {
       card.addEventListener('click', (event) => {
         document.querySelector(`div.modal-container#${event.currentTarget.id}`).style.display = 'block';
+        /*
+        Prev/Next button
+        - show during search results but only toggle between employees returned in the search results
+        */
         Array.from(document.getElementsByClassName('modal-next')).forEach((nextBtn) => {
           nextBtn.addEventListener('click', (event) => {
             let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
@@ -53,6 +57,21 @@ fetchData('https://randomuser.me/api/?results=12&nat=us')
               // Show 0th employee modal
               document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
               currentIndex = 0;
+              document.querySelector(`[data-index='${currentIndex}']`).style.display = 'block';
+            }
+          });
+        });
+
+        Array.from(document.getElementsByClassName('modal-prev')).forEach((prevBtn) => {
+          prevBtn.addEventListener('click', (event) => {
+            let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
+            if (currentIndex > 0) {
+              document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
+              document.querySelector(`[data-index='${currentIndex - 1}']`).style.display = 'block';
+            } else {
+              // Show 11th employee modal
+              document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
+              currentIndex = 11;
               document.querySelector(`[data-index='${currentIndex}']`).style.display = 'block';
             }
           });
@@ -92,6 +111,7 @@ function showSearchResults(searchResults) {
   if (searchBar.value) {
     // Hide all employees from the gallery first
     Array.from(gallery.children).forEach((employee) => employee.style.display = 'none');
+    Array.from(document.getElementsByClassName('modal-btn-container')).forEach((modalBtnContainer) => modalBtnContainer.style.display = 'none');
     if (searchResults.length > 0) {
       searchResults.forEach((employee) => document.querySelector(`.card#employee-${employee.login.uuid}`).style.display = '');
     } else {
@@ -104,6 +124,7 @@ function showSearchResults(searchResults) {
     }
   } else {
     Array.from(gallery.children).forEach((employee) => employee.style.display = '');
+    Array.from(document.getElementsByClassName('modal-btn-container')).forEach((modalBtnContainer) => modalBtnContainer.style.display = '');
   }
 };
 
@@ -127,16 +148,6 @@ function generateEmployeeGallery(data) {
       `);
   });
 };
-
-/*
-  Prev/Next button
-  - display the next employee modal when clicking Next
-  - display the previous employee modal when clicking Previous
-  - if at 0th employee - do not display Previous button
-  - if at 11th employee - do not display Next button
-*/
-
-
 
 /**
  * Modal
