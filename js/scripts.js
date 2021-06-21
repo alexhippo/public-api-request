@@ -43,6 +43,20 @@ fetchData('https://randomuser.me/api/?results=12&nat=us')
     Array.from(document.getElementsByClassName('card')).forEach((card) => {
       card.addEventListener('click', (event) => {
         document.querySelector(`div.modal-container#${event.currentTarget.id}`).style.display = 'block';
+        Array.from(document.getElementsByClassName('modal-next')).forEach((nextBtn) => {
+          nextBtn.addEventListener('click', (event) => {
+            let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
+            if (currentIndex < 11) {
+              document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
+              document.querySelector(`[data-index='${currentIndex + 1}']`).style.display = 'block';
+            } else {
+              // Show 0th employee modal
+              document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
+              currentIndex = 0;
+              document.querySelector(`[data-index='${currentIndex}']`).style.display = 'block';
+            }
+          });
+        });
       });
     });
 
@@ -114,13 +128,23 @@ function generateEmployeeGallery(data) {
   });
 };
 
+/*
+  Prev/Next button
+  - display the next employee modal when clicking Next
+  - display the previous employee modal when clicking Previous
+  - if at 0th employee - do not display Previous button
+  - if at 11th employee - do not display Next button
+*/
+
+
+
 /**
  * Modal
  */
 function generateEmployeeModal(data) {
   data.map((employee, index) => {
     document.querySelector('body').insertAdjacentHTML('beforeend', `
-      <div class="modal-container" id="employee-${employee.login.uuid}">
+      <div class="modal-container" id="employee-${employee.login.uuid}" data-index="${index}">
           <div class="modal">
               <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
               <div class="modal-info-container">
