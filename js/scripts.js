@@ -46,34 +46,17 @@ fetchData('https://randomuser.me/api/?results=12&nat=us')
         /*
         Prev/Next button
         - show during search results but only toggle between employees returned in the search results
+        - refactor this so it can be applied to the search results?
         */
         Array.from(document.getElementsByClassName('modal-next')).forEach((nextBtn) => {
           nextBtn.addEventListener('click', (event) => {
-            let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
-            if (currentIndex < 11) {
-              document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
-              document.querySelector(`[data-index='${currentIndex + 1}']`).style.display = 'block';
-            } else {
-              // Show 0th employee modal
-              document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
-              currentIndex = 0;
-              document.querySelector(`[data-index='${currentIndex}']`).style.display = 'block';
-            }
+            showNextEmployee(event, 'full');
           });
         });
 
         Array.from(document.getElementsByClassName('modal-prev')).forEach((prevBtn) => {
           prevBtn.addEventListener('click', (event) => {
-            let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
-            if (currentIndex > 0) {
-              document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
-              document.querySelector(`[data-index='${currentIndex - 1}']`).style.display = 'block';
-            } else {
-              // Show 11th employee modal
-              document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
-              currentIndex = 11;
-              document.querySelector(`[data-index='${currentIndex}']`).style.display = 'block';
-            }
+            showPrevEmployee(event, 'full');
           });
         });
       });
@@ -87,7 +70,69 @@ fetchData('https://randomuser.me/api/?results=12&nat=us')
     });
   })
 
+/**
+ * Display the next employee's modal in the list.
+ * @param {EventTarget} event - the event target
+ * @param {String} list - which list are we showing the Next Employee from? e.g. full, searchResults
+ */
+function showNextEmployee(event, list, listLength = 11) {
+  if (list === 'full') {
+    let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
+    if (currentIndex < listLength) {
+      document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
+      document.querySelector(`[data-index='${currentIndex + 1}']`).style.display = 'block';
+    } else {
+      // Show 0th employee modal
+      document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
+      currentIndex = 0;
+      document.querySelector(`[data-index='${currentIndex}']`).style.display = 'block';
+    }
+  } else if (list === 'searchResults') {
+    let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.searchIndex);
+    console.log(currentIndex);
+    if (currentIndex < listLength) {
+      document.querySelector(`[data-searchIndex='${currentIndex}']`).style.display = 'none';
+      document.querySelector(`[data-searchIndex='${currentIndex + 1}']`).style.display = 'block';
+    } else {
+      // Show 0th employee modal
+      document.querySelector(`[data-searchIndex='${currentIndex}']`).style.display = 'none';
+      currentIndex = 0;
+      document.querySelector(`[data-searchIndex='${currentIndex}']`).style.display = 'block';
+    }
+  }
+}
 
+/**
+ * Display the next employee's modal in the list.
+ * @param {EventTarget} event - the event target
+ * @param {String} list - which list are we showing the Next Employee from? e.g. full, searchResults
+ */
+function showPrevEmployee(event, list, listLength = 11) {
+  if (list === 'full') {
+    let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
+    if (currentIndex > 0) {
+      document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
+      document.querySelector(`[data-index='${currentIndex - 1}']`).style.display = 'block';
+    } else {
+      // Show 11th employee modal
+      document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
+      currentIndex = 11;
+      document.querySelector(`[data-index='${currentIndex}']`).style.display = 'block';
+    }
+  } else if (list === 'searchResults') {
+    let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.searchIndex);
+    console.log(currentIndex);
+    if (currentIndex < listLength) {
+      document.querySelector(`[data-searchIndex='${currentIndex}']`).style.display = 'none';
+      document.querySelector(`[data-searchIndex='${currentIndex + 1}']`).style.display = 'block';
+    } else {
+      // Show 0th employee modal
+      document.querySelector(`[data-searchIndex='${currentIndex}']`).style.display = 'none';
+      currentIndex = 0;
+      document.querySelector(`[data-searchIndex='${currentIndex}']`).style.display = 'block';
+    }
+  }
+}
 
 /**
 * Search for employees based off the searchInput and return the search results
@@ -105,18 +150,27 @@ async function searchEmployees(searchInput, employees) {
 * Display and paginate the results returned by `searchEmployees()`
 * If there are no search results, a "No results found" style message will be displayed
 * If there is no searchInput (e.g. search was cleared by the user), the full employee list will be displayed by default
- * @param {Array} searchResults 
- */
+* @param {Array} searchResults 
+*/
 function showSearchResults(searchResults) {
   if (searchBar.value) {
     // Hide all employees from the gallery first
     Array.from(gallery.children).forEach((employee) => employee.style.display = 'none');
-    Array.from(document.getElementsByClassName('modal-btn-container')).forEach((modalBtnContainer) => modalBtnContainer.style.display = 'none');
     if (searchResults.length > 0) {
-      searchResults.forEach((employee) => document.querySelector(`.card#employee-${employee.login.uuid}`).style.display = '');
+      searchResults.forEach((employee) => {
+        const card = document.querySelector(`.card#employee-${employee.login.uuid}`)
+        card.style.display = '';
+      });
+
+      Array.from(document.getElementsByClassName('modal-next')).forEach((nextBtn) => {
+        nextBtn.addEventListener('click', (event) => {
+          showNextEmployee(event, 'searchResults', searchResults.length);
+        });
+      });
+
     } else {
       gallery.insertAdjacentHTML('beforeend', `
-        <div>
+        <div id="no-search-results">
           <h3>Sorry, we couldn't find a employee with that name. Please check your spelling or try a different name.</h3>
         </div>
         `
@@ -124,7 +178,7 @@ function showSearchResults(searchResults) {
     }
   } else {
     Array.from(gallery.children).forEach((employee) => employee.style.display = '');
-    Array.from(document.getElementsByClassName('modal-btn-container')).forEach((modalBtnContainer) => modalBtnContainer.style.display = '');
+    document.getElementById('no-search-results').style.display = 'none';
   }
 };
 
