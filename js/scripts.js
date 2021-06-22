@@ -35,7 +35,7 @@ fetchData('https://randomuser.me/api/?results=12&nat=us')
 
     searchButton.addEventListener('click', () => {
       searchEmployees(searchBar.value, data.results).then((data) => {
-        showSearchResults(data)
+        showSearchResults(data);
       })
     });
   })
@@ -50,13 +50,13 @@ fetchData('https://randomuser.me/api/?results=12&nat=us')
         */
         Array.from(document.getElementsByClassName('modal-next')).forEach((nextBtn) => {
           nextBtn.addEventListener('click', (event) => {
-            showNextEmployee(event, 'full');
+            showNextEmployee(event);
           });
         });
 
         Array.from(document.getElementsByClassName('modal-prev')).forEach((prevBtn) => {
           prevBtn.addEventListener('click', (event) => {
-            showPrevEmployee(event, 'full');
+            showPrevEmployee(event);
           });
         });
       });
@@ -76,19 +76,15 @@ fetchData('https://randomuser.me/api/?results=12&nat=us')
  * @param {String} list - which list are we showing the Next Employee from? e.g. full, searchResults
  */
 function showNextEmployee(event, list, listLength = 11) {
-  if (list === 'full') {
-    let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
-    if (currentIndex < listLength) {
-      document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
-      document.querySelector(`[data-index='${currentIndex + 1}']`).style.display = 'block';
-    } else {
-      // Show 0th employee modal
-      document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
-      currentIndex = 0;
-      document.querySelector(`[data-index='${currentIndex}']`).style.display = 'block';
-    }
-  } else if (list === 'searchResults') {
-    let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.searchIndex);
+  let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
+  if (currentIndex < listLength) {
+    document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
+    document.querySelector(`[data-index='${currentIndex + 1}']`).style.display = 'block';
+  } else {
+    // Show first employee modal
+    document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
+    currentIndex = 0;
+    document.querySelector(`[data-index='${currentIndex}']`).style.display = 'block';
   }
 }
 
@@ -97,20 +93,16 @@ function showNextEmployee(event, list, listLength = 11) {
  * @param {EventTarget} event - the event target
  * @param {String} list - which list are we showing the Next Employee from? e.g. full, searchResults
  */
-function showPrevEmployee(event, list, listLength = 11) {
-  if (list === 'full') {
-    let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
-    if (currentIndex > 0) {
-      document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
-      document.querySelector(`[data-index='${currentIndex - 1}']`).style.display = 'block';
-    } else {
-      // Show 11th employee modal
-      document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
-      currentIndex = 11;
-      document.querySelector(`[data-index='${currentIndex}']`).style.display = 'block';
-    }
-  } else if (list === 'searchResults') {
-    let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.searchIndex);
+function showPrevEmployee(event) {
+  let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
+  if (currentIndex > 0) {
+    document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
+    document.querySelector(`[data-index='${currentIndex - 1}']`).style.display = 'block';
+  } else {
+    // Show last employee modal
+    document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
+    currentIndex = 11;
+    document.querySelector(`[data-index='${currentIndex}']`).style.display = 'block';
   }
 }
 
@@ -158,7 +150,9 @@ function showSearchResults(searchResults) {
     }
   } else {
     Array.from(gallery.children).forEach((employee) => employee.style.display = '');
-    document.getElementById('no-search-results').style.display = 'none';
+    if (document.getElementById('no-search-results')) {
+      document.getElementById('no-search-results').style.display = 'none';
+    }
   }
 };
 
