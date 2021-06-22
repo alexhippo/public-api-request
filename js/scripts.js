@@ -89,16 +89,6 @@ function showNextEmployee(event, list, listLength = 11) {
     }
   } else if (list === 'searchResults') {
     let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.searchIndex);
-    console.log(currentIndex);
-    if (currentIndex < listLength) {
-      document.querySelector(`[data-searchIndex='${currentIndex}']`).style.display = 'none';
-      document.querySelector(`[data-searchIndex='${currentIndex + 1}']`).style.display = 'block';
-    } else {
-      // Show 0th employee modal
-      document.querySelector(`[data-searchIndex='${currentIndex}']`).style.display = 'none';
-      currentIndex = 0;
-      document.querySelector(`[data-searchIndex='${currentIndex}']`).style.display = 'block';
-    }
   }
 }
 
@@ -121,16 +111,6 @@ function showPrevEmployee(event, list, listLength = 11) {
     }
   } else if (list === 'searchResults') {
     let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.searchIndex);
-    console.log(currentIndex);
-    if (currentIndex < listLength) {
-      document.querySelector(`[data-searchIndex='${currentIndex}']`).style.display = 'none';
-      document.querySelector(`[data-searchIndex='${currentIndex + 1}']`).style.display = 'block';
-    } else {
-      // Show 0th employee modal
-      document.querySelector(`[data-searchIndex='${currentIndex}']`).style.display = 'none';
-      currentIndex = 0;
-      document.querySelector(`[data-searchIndex='${currentIndex}']`).style.display = 'block';
-    }
   }
 }
 
@@ -211,7 +191,7 @@ function generateEmployeeModal(data) {
     document.querySelector('body').insertAdjacentHTML('beforeend', `
       <div class="modal-container" id="employee-${employee.login.uuid}" data-index="${index}">
           <div class="modal">
-              <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
+              <button type="button" id="modal-close-btn" class="modal-close-btn" aria-label="Close this employee modal"><strong>X</strong></button>
               <div class="modal-info-container">
                   <img class="modal-img" src="${employee.picture.large}" alt="Profile Picture of ${employee.name.first} ${employee.name.last}">
                   <h3 id="name" class="modal-name cap">${employee.name.first} ${employee.name.last}</h3>

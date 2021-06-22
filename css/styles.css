@@ -2,7 +2,8 @@
    Public API Request
 ======================================== */
 
-@import url('https://fonts.googleapis.com/css?family=Nunito');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&family=Staatliches&display=swap');
+
 
 * {
 	box-sizing: border-box;
@@ -14,9 +15,9 @@ html, body {
 }
 
 body {
-    font-family: "Nunito", sans-serif;
+    font-family: 'Open Sans', sans-serif;
     text-align: center;
-    background: rgba(235, 235, 235, 0.9);
+    background: rgb(74, 78, 105);
 }
 
 header {
@@ -29,8 +30,8 @@ header {
 }
 
 header h1 {
-    font-size: 1.25em;
-    color: rgba(50, 50, 50, 0.9);
+    font-size: 2.25em;
+    color: rgb(255,255,255);
     margin-top: 35px;
 }
 
@@ -62,6 +63,11 @@ header h1 {
     border: 1px solid rgba(50, 50, 50, 0.9);
 }
 
+#no-search-results h3 {
+    color: rgb(255,255,255);
+    font-weight: normal;
+}
+
 
 /* ===================================== 
    Gallery
@@ -87,7 +93,7 @@ header h1 {
     max-width: 360px;
     margin: 10px 10px 20px;
     padding: 10px;
-    background: rgba(245, 245, 245, 0.9);
+    background: rgb(242, 233, 228);
     border-radius: 0.25em;
     border: 1px solid rgba(50, 50, 50, 0.3);
     transition: .4s ease-out;
@@ -202,7 +208,7 @@ header h1 {
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.9);
     padding: 0.75em 1.5em;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgb(34, 34, 59);
     border-radius: 0.35em;
     transition: .4s ease-out;
     outline: none;
@@ -229,6 +235,7 @@ header h1 {
 
     .header-text-container {
         text-align: left;
+        font-family: 'Staatliches', cursive;
     }
 
     .search-container {
