@@ -15,6 +15,7 @@ searchContainer.insertAdjacentHTML('beforeend', `
 `);
 const searchBar = document.querySelector('#search-input');
 const searchButton = document.querySelector('#search-submit');
+const numberOfEmployees = 12;
 
 /**
  * Fetch data from a specified API endpoint
@@ -28,7 +29,7 @@ function fetchData(url) {
     .catch(error => console.log('Looks like there was a problem', error));
 };
 
-fetchData('https://randomuser.me/api/?results=12&nat=us')
+fetchData(`https://randomuser.me/api/?results=${numberOfEmployees}&nat=us`)
   .then(data => {
     generateEmployeeGallery(data.results);
     generateEmployeeModal(data.results);
@@ -42,7 +43,9 @@ fetchData('https://randomuser.me/api/?results=12&nat=us')
   .then(() => {
     Array.from(document.getElementsByClassName('card')).forEach((card) => {
       card.addEventListener('click', (event) => {
-        document.querySelector(`div.modal-container#${event.currentTarget.id}`).style.display = 'block';
+        const clickedIndex = event.currentTarget.dataset.index;
+        displayEmployeeModal(clickedIndex);
+        // document.querySelector(`div.modal-container#${event.currentTarget.id}`).style.display = 'block';
         /*
         Prev/Next button
         - show during search results but only toggle between employees returned in the search results
@@ -50,13 +53,16 @@ fetchData('https://randomuser.me/api/?results=12&nat=us')
         */
         Array.from(document.getElementsByClassName('modal-next')).forEach((nextBtn) => {
           nextBtn.addEventListener('click', (event) => {
-            showNextEmployee(event);
+            //get the current index from the modal
+            let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
+            displayEmployeeModal(returnNextDataIndex(currentIndex));
           });
         });
 
         Array.from(document.getElementsByClassName('modal-prev')).forEach((prevBtn) => {
           prevBtn.addEventListener('click', (event) => {
-            showPrevEmployee(event);
+            let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
+            displayEmployeeModal(returnPreviousDataIndex(currentIndex));
           });
         });
       });
@@ -71,10 +77,54 @@ fetchData('https://randomuser.me/api/?results=12&nat=us')
   })
 
 /**
- * Display the next employee's modal in the list.
- * @param {EventTarget} event - the event target
- * @param {String} list - which list are we showing the Next Employee from? e.g. full, searchResults
+ * Display the next employee's modal
+ * @param {*} index - data-index of the employee's modal
  */
+function displayEmployeeModal(index) {
+  //clear any other existing modals first
+  Array.from(document.querySelectorAll(`div.modal-container`)).forEach((modal) => {
+    modal.style.display = 'none';
+  })
+  document.querySelector(`div.modal-container[data-index="${index}"`).style.display = 'block';
+}
+
+function returnNextDataIndex(currentIndex) {
+  let nextIndex = 0;
+  if (currentIndex === (numberOfEmployees - 1)) {
+    return nextIndex;
+  } else {
+    nextIndex = currentIndex + 1;
+    let nextIndexCard = document.querySelector(`div.card[data-index="${nextIndex}"]`);
+    while (nextIndex <= (numberOfEmployees - 1)) {
+      if (nextIndexCard.classList.contains('visible')) {
+        return nextIndex;
+      } else {
+        nextIndex++;
+        nextIndexCard = document.querySelector(`div.card[data-index="${nextIndex}"]`);
+      }
+    }
+  }
+}
+
+function returnPreviousDataIndex(currentIndex) {
+  let prevIndex = numberOfEmployees - 1;
+  if (currentIndex === 0) {
+    return prevIndex;
+  } else {
+    prevIndex = currentIndex - 1;
+    let prevIndexCard = document.querySelector(`div.card[data-index="${prevIndex}"]`);
+    while (prevIndex >= 0) {
+      if (prevIndexCard.classList.contains('visible')) {
+        return prevIndex;
+      } else {
+        prevIndex++;
+        prevIndexCard = document.querySelector(`div.card[data-index="${prevIndex}"]`);
+      }
+    }
+  }
+}
+
+
 function showNextEmployee(event, list, listLength = 11) {
   let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
   if (currentIndex < listLength) {
@@ -127,19 +177,16 @@ async function searchEmployees(searchInput, employees) {
 function showSearchResults(searchResults) {
   if (searchBar.value) {
     // Hide all employees from the gallery first
-    Array.from(gallery.children).forEach((employee) => employee.style.display = 'none');
+    Array.from(gallery.children).forEach((card) => {
+      card.classList.remove('visible');
+      card.classList.add('hidden');
+    });
     if (searchResults.length > 0) {
       searchResults.forEach((employee) => {
         const card = document.querySelector(`.card#employee-${employee.login.uuid}`)
-        card.style.display = '';
+        card.classList.remove('hidden');
+        card.classList.add('visible');
       });
-
-      Array.from(document.getElementsByClassName('modal-next')).forEach((nextBtn) => {
-        nextBtn.addEventListener('click', (event) => {
-          showNextEmployee(event, 'searchResults', searchResults.length);
-        });
-      });
-
     } else {
       gallery.insertAdjacentHTML('beforeend', `
         <div id="no-search-results">
@@ -149,7 +196,10 @@ function showSearchResults(searchResults) {
       )
     }
   } else {
-    Array.from(gallery.children).forEach((employee) => employee.style.display = '');
+    Array.from(gallery.children).forEach((card) => {
+      card.classList.remove('hidden');
+      card.classList.add('visible');
+    });
     if (document.getElementById('no-search-results')) {
       document.getElementById('no-search-results').style.display = 'none';
     }
@@ -161,9 +211,9 @@ function showSearchResults(searchResults) {
 */
 const gallery = document.getElementById('gallery');
 function generateEmployeeGallery(data) {
-  data.map((employee) => {
+  data.map((employee, index) => {
     gallery.insertAdjacentHTML('beforeend', `
-      <div class="card" id="employee-${employee.login.uuid}">
+      <div class="card visible" id="employee-${employee.login.uuid}" data-index="${index}">
           <div class="card-img-container">
               <img class="card-img" src="${employee.picture.medium}" alt="Profile Picture of ${employee.name.first} ${employee.name.last}">
           </div>
@@ -180,6 +230,7 @@ function generateEmployeeGallery(data) {
 /**
  * Modal
  */
+// @todo: Fix up phone number formatting
 function generateEmployeeModal(data) {
   data.map((employee, index) => {
     document.querySelector('body').insertAdjacentHTML('beforeend', `
