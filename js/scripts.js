@@ -45,15 +45,10 @@ fetchData(`https://randomuser.me/api/?results=${numberOfEmployees}&nat=us`)
       card.addEventListener('click', (event) => {
         const clickedIndex = event.currentTarget.dataset.index;
         displayEmployeeModal(clickedIndex);
-        // document.querySelector(`div.modal-container#${event.currentTarget.id}`).style.display = 'block';
-        /*
-        Prev/Next button
-        - show during search results but only toggle between employees returned in the search results
-        - refactor this so it can be applied to the search results?
-        */
+
         Array.from(document.getElementsByClassName('modal-next')).forEach((nextBtn) => {
           nextBtn.addEventListener('click', (event) => {
-            //get the current index from the modal
+            // Get the current index from the modal
             let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
             displayEmployeeModal(returnNextDataIndex(currentIndex));
           });
@@ -68,7 +63,6 @@ fetchData(`https://randomuser.me/api/?results=${numberOfEmployees}&nat=us`)
       });
     });
 
-    // @todo: Close when clicking outside of the modal too
     Array.from(document.getElementsByClassName('modal-close-btn')).forEach((closeButton) => {
       closeButton.addEventListener('click', (event) => {
         event.currentTarget.parentElement.parentElement.style.display = 'none';
@@ -78,16 +72,21 @@ fetchData(`https://randomuser.me/api/?results=${numberOfEmployees}&nat=us`)
 
 /**
  * Display the next employee's modal
- * @param {*} index - data-index of the employee's modal
+ * @param {Integer} index - data-index of the employee's modal
  */
 function displayEmployeeModal(index) {
-  //clear any other existing modals first
+  // Clear any other existing modals first
   Array.from(document.querySelectorAll(`div.modal-container`)).forEach((modal) => {
     modal.style.display = 'none';
   })
   document.querySelector(`div.modal-container[data-index="${index}"`).style.display = 'block';
 }
 
+/**
+ * Return the next visible employee modal index number
+ * @param {Integer} currentIndex - currentIndex of the Employee Card
+ * @returns {Integer} nextIndex - index number of the next visible Employee Card
+ */
 function returnNextDataIndex(currentIndex) {
   let nextIndex = 0;
   if (currentIndex === (numberOfEmployees - 1)) {
@@ -106,6 +105,11 @@ function returnNextDataIndex(currentIndex) {
   }
 }
 
+/**
+ * Return the previous visible employee modal index number
+ * @param {Integer} currentIndex - currentIndex of the Employee Card 
+ * @returns {Integer} prevIndex - index number of the previous visible Employee Card
+ */
 function returnPreviousDataIndex(currentIndex) {
   let prevIndex = numberOfEmployees - 1;
   if (currentIndex === 0) {
@@ -124,37 +128,6 @@ function returnPreviousDataIndex(currentIndex) {
   }
 }
 
-
-function showNextEmployee(event, list, listLength = 11) {
-  let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
-  if (currentIndex < listLength) {
-    document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
-    document.querySelector(`[data-index='${currentIndex + 1}']`).style.display = 'block';
-  } else {
-    // Show first employee modal
-    document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
-    currentIndex = 0;
-    document.querySelector(`[data-index='${currentIndex}']`).style.display = 'block';
-  }
-}
-
-/**
- * Display the next employee's modal in the list.
- * @param {EventTarget} event - the event target
- * @param {String} list - which list are we showing the Next Employee from? e.g. full, searchResults
- */
-function showPrevEmployee(event) {
-  let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
-  if (currentIndex > 0) {
-    document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
-    document.querySelector(`[data-index='${currentIndex - 1}']`).style.display = 'block';
-  } else {
-    // Show last employee modal
-    document.querySelector(`[data-index='${currentIndex}']`).style.display = 'none';
-    currentIndex = 11;
-    document.querySelector(`[data-index='${currentIndex}']`).style.display = 'block';
-  }
-}
 
 /**
 * Search for employees based off the searchInput and return the search results
@@ -206,10 +179,12 @@ function showSearchResults(searchResults) {
   }
 };
 
-/**
-* Gallery
-*/
+
 const gallery = document.getElementById('gallery');
+/**
+ * Create cards for each employee and add them to the employee gallery
+ * @param {Array} data - employee data which we build the cards from
+ */
 function generateEmployeeGallery(data) {
   data.map((employee, index) => {
     gallery.insertAdjacentHTML('beforeend', `
@@ -228,9 +203,22 @@ function generateEmployeeGallery(data) {
 };
 
 /**
- * Modal
+ * Reformat cell number into desired format
+ * @param {String} cellNumber - cell number to format
+ * @returns {String} cellNumber
  */
-// @todo: Fix up phone number formatting
+function normaliseCellNumber(cellNumber) {
+  if (!/^\(\d{3}\)\s\d{3}-\d{4}$/.test(cellNumber)) {
+    const regex = /^\D*(\d{3})\D*(\d{3})\D*(\d{4})\D*$/
+    return cellNumber.replace(regex, '($1) $2-$3');
+  }
+  return cellNumber;
+}
+
+/**
+ * Create a modal for each employee
+ * @param {Array} data - employee data which we build the modals from
+ */
 function generateEmployeeModal(data) {
   data.map((employee, index) => {
     document.querySelector('body').insertAdjacentHTML('beforeend', `
@@ -243,7 +231,7 @@ function generateEmployeeModal(data) {
                   <p class="modal-text">${employee.email}</p>
                   <p class="modal-text cap">${employee.location.city}</p>
                   <hr>
-                  <p class="modal-text">${employee.cell}</p>
+                  <p class="modal-text">${normaliseCellNumber(employee.cell)}</p>
                   <p class="modal-text">${employee.location.street.number} ${employee.location.street.name}, ${employee.location.city}, ${employee.location.state} ${employee.location.postcode}</p>
                   <p class="modal-text">Birthday: ${new Date(employee.dob.date).toLocaleDateString('en-US')}</p>
               </div>
