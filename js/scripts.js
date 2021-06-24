@@ -105,10 +105,11 @@ function returnNextDataIndex(currentIndex) {
       if (nextIndexCard.classList.contains('visible')) {
         return nextIndex;
       } else {
-        nextIndex = nextIndex + 1;
-        nextIndexCard = document.querySelector(`div.card[data-index="${nextIndex}"]`);
-        if (nextIndex >= numberOfEmployees) {
+        if (nextIndex === numberOfEmployees - 1) {
           nextIndex = 0;
+          nextIndexCard = document.querySelector(`div.card[data-index="${nextIndex}"]`);
+        } else {
+          nextIndex = nextIndex + 1;
           nextIndexCard = document.querySelector(`div.card[data-index="${nextIndex}"]`);
         }
       }
@@ -124,20 +125,32 @@ function returnNextDataIndex(currentIndex) {
  */
 function returnPreviousDataIndex(currentIndex) {
   let prevIndex = numberOfEmployees - 1;
-  if (currentIndex === 0) {
+  let prevIndexCard = document.querySelector(`div.card[data-index="${prevIndex}"]`);
+
+  if ((currentIndex === 0) && (prevIndexCard.classList.contains('visible'))) {
     return prevIndex;
   } else {
     prevIndex = currentIndex - 1;
-    let prevIndexCard = document.querySelector(`div.card[data-index="${prevIndex}"]`);
+    prevIndexCard = document.querySelector(`div.card[data-index="${prevIndex}"]`);
+    if (prevIndex < 0) {
+      prevIndex = numberOfEmployees - 1;
+      prevIndexCard = document.querySelector(`div.card[data-index="${prevIndex}"]`);
+    }
     while (prevIndex >= 0) {
       if (prevIndexCard.classList.contains('visible')) {
         return prevIndex;
       } else {
-        prevIndex++;
-        prevIndexCard = document.querySelector(`div.card[data-index="${prevIndex}"]`);
+        if (prevIndex <= 0) {
+          prevIndex = 11;
+          prevIndexCard = document.querySelector(`div.card[data-index="${prevIndex}"]`);
+        } else {
+          prevIndex = prevIndex - 1;
+          prevIndexCard = document.querySelector(`div.card[data-index="${prevIndex}"]`);
+        }
       }
     }
   }
+  return currentIndex;
 }
 
 /**
