@@ -34,7 +34,8 @@ fetchData(`https://randomuser.me/api/?results=${numberOfEmployees}&nat=us`)
     generateEmployeeGallery(data.results);
     generateEmployeeModal(data.results);
 
-    searchButton.addEventListener('click', () => {
+    searchButton.addEventListener('click', (event) => {
+      event.preventDefault();
       searchEmployees(searchBar.value, data.results).then((data) => {
         showSearchResults(data);
       })
@@ -89,20 +90,31 @@ function displayEmployeeModal(index) {
  */
 function returnNextDataIndex(currentIndex) {
   let nextIndex = 0;
-  if (currentIndex === (numberOfEmployees - 1)) {
+  let nextIndexCard = document.querySelector(`div.card[data-index="${nextIndex}"]`);
+
+  if ((currentIndex === (numberOfEmployees - 1)) && (nextIndexCard.classList.contains('visible'))) {
     return nextIndex;
   } else {
     nextIndex = currentIndex + 1;
-    let nextIndexCard = document.querySelector(`div.card[data-index="${nextIndex}"]`);
-    while (nextIndex <= (numberOfEmployees - 1)) {
+    nextIndexCard = document.querySelector(`div.card[data-index="${nextIndex}"]`);
+    if (nextIndex >= numberOfEmployees) {
+      nextIndex = 0;
+      nextIndexCard = document.querySelector(`div.card[data-index="${nextIndex}"]`);
+    }
+    while (nextIndex <= numberOfEmployees - 1) {
       if (nextIndexCard.classList.contains('visible')) {
         return nextIndex;
       } else {
-        nextIndex++;
+        nextIndex = nextIndex + 1;
         nextIndexCard = document.querySelector(`div.card[data-index="${nextIndex}"]`);
+        if (nextIndex >= numberOfEmployees) {
+          nextIndex = 0;
+          nextIndexCard = document.querySelector(`div.card[data-index="${nextIndex}"]`);
+        }
       }
     }
   }
+  return currentIndex;
 }
 
 /**
@@ -127,7 +139,6 @@ function returnPreviousDataIndex(currentIndex) {
     }
   }
 }
-
 
 /**
 * Search for employees based off the searchInput and return the search results
@@ -179,8 +190,8 @@ function showSearchResults(searchResults) {
   }
 };
 
-
 const gallery = document.getElementById('gallery');
+
 /**
  * Create cards for each employee and add them to the employee gallery
  * @param {Array} data - employee data which we build the cards from
