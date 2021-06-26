@@ -96,10 +96,12 @@ function displayEmployeeModal(index) {
  * @returns {Integer} nextIndex - index number of the next visible Employee Card
  */
 function returnNextDataIndex(currentIndex) {
-  let nextIndex = 0;
+  const startIndex = 0;
+  const endIndex = numberOfEmployees - 1;
+  let nextIndex = startIndex;
   let nextIndexCard = document.querySelector(`div.card[data-index="${nextIndex}"]`);
 
-  if ((currentIndex === (numberOfEmployees - 1)) && (nextIndexCard.classList.contains('visible'))) {
+  if ((currentIndex === endIndex) && (nextIndexCard.classList.contains('visible'))) {
     return nextIndex;
   } else {
     nextIndex = currentIndex + 1;
@@ -108,11 +110,11 @@ function returnNextDataIndex(currentIndex) {
       nextIndex = 0;
       nextIndexCard = document.querySelector(`div.card[data-index="${nextIndex}"]`);
     }
-    while (nextIndex <= numberOfEmployees - 1) {
+    while (nextIndex <= endIndex) {
       if (nextIndexCard.classList.contains('visible')) {
         return nextIndex;
       } else {
-        if (nextIndex === numberOfEmployees - 1) {
+        if (nextIndex === endIndex) {
           nextIndex = 0;
           nextIndexCard = document.querySelector(`div.card[data-index="${nextIndex}"]`);
         } else {
@@ -131,24 +133,26 @@ function returnNextDataIndex(currentIndex) {
  * @returns {Integer} prevIndex - index number of the previous visible Employee Card
  */
 function returnPreviousDataIndex(currentIndex) {
-  let prevIndex = numberOfEmployees - 1;
+  const startIndex = 0;
+  const endIndex = numberOfEmployees - 1;
+  let prevIndex = endIndex;
   let prevIndexCard = document.querySelector(`div.card[data-index="${prevIndex}"]`);
 
-  if ((currentIndex === 0) && (prevIndexCard.classList.contains('visible'))) {
+  if ((currentIndex === startIndex) && (prevIndexCard.classList.contains('visible'))) {
     return prevIndex;
   } else {
     prevIndex = currentIndex - 1;
     prevIndexCard = document.querySelector(`div.card[data-index="${prevIndex}"]`);
-    if (prevIndex < 0) {
-      prevIndex = numberOfEmployees - 1;
+    if (prevIndex < startIndex) {
+      prevIndex = endIndex;
       prevIndexCard = document.querySelector(`div.card[data-index="${prevIndex}"]`);
     }
-    while (prevIndex >= 0) {
+    while (prevIndex >= startIndex) {
       if (prevIndexCard.classList.contains('visible')) {
         return prevIndex;
       } else {
-        if (prevIndex <= 0) {
-          prevIndex = 11;
+        if (prevIndex <= startIndex) {
+          prevIndex = endIndex;
           prevIndexCard = document.querySelector(`div.card[data-index="${prevIndex}"]`);
         } else {
           prevIndex = prevIndex - 1;
