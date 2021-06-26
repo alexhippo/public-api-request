@@ -106,16 +106,12 @@ function returnNextDataIndex(currentIndex) {
   } else {
     nextIndex = currentIndex + 1;
     nextIndexCard = document.querySelector(`div.card[data-index="${nextIndex}"]`);
-    if (nextIndex >= numberOfEmployees) {
-      nextIndex = 0;
-      nextIndexCard = document.querySelector(`div.card[data-index="${nextIndex}"]`);
-    }
     while (nextIndex <= endIndex) {
       if (nextIndexCard.classList.contains('visible')) {
         return nextIndex;
       } else {
         if (nextIndex === endIndex) {
-          nextIndex = 0;
+          nextIndex = startIndex;
           nextIndexCard = document.querySelector(`div.card[data-index="${nextIndex}"]`);
         } else {
           nextIndex = nextIndex + 1;
@@ -143,10 +139,6 @@ function returnPreviousDataIndex(currentIndex) {
   } else {
     prevIndex = currentIndex - 1;
     prevIndexCard = document.querySelector(`div.card[data-index="${prevIndex}"]`);
-    if (prevIndex < startIndex) {
-      prevIndex = endIndex;
-      prevIndexCard = document.querySelector(`div.card[data-index="${prevIndex}"]`);
-    }
     while (prevIndex >= startIndex) {
       if (prevIndexCard.classList.contains('visible')) {
         return prevIndex;
