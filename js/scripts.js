@@ -22,11 +22,18 @@ const numberOfEmployees = 12;
  * @param {String} url - the API endpoint to fetch
  * @returns API response
  */
-// @todo: Catch unforseen errors
 function fetchData(url) {
   return fetch(url)
     .then(res => res.json())
-    .catch(error => console.log('Looks like there was a problem', error));
+    .catch(error => {
+      gallery.insertAdjacentHTML('beforeend', `
+      <div id="error">
+        <h3>Sorry, something went wrong. Please refresh or try again later.</h3>
+        <h4>Error: ${error}</h4>
+      </div>
+      `
+      )
+    });
 };
 
 fetchData(`https://randomuser.me/api/?results=${numberOfEmployees}&nat=us`)
@@ -69,7 +76,7 @@ fetchData(`https://randomuser.me/api/?results=${numberOfEmployees}&nat=us`)
         event.currentTarget.parentElement.parentElement.style.display = 'none';
       })
     });
-  })
+  });
 
 /**
  * Display the next employee's modal
