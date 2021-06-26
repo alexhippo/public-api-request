@@ -95,12 +95,49 @@ fetchData(`https://randomuser.me/api/?results=${numberOfEmployees}&nat=us`)
  * @param {Integer} index - data-index of the employee's modal
  */
 function displayEmployeeModal(index) {
-  // Clear any other existing modals first
+  // Close any other existing modals first
   Array.from(document.querySelectorAll(`div.modal-container`)).forEach((modal) => {
     modal.style.display = 'none';
   })
-  document.querySelector(`div.modal-container[data-index="${index}"`).style.display = 'block';
+
+  const modal = document.querySelector(`div.modal-container[data-index="${index}"`);
+  modal.style.display = 'block';
+  trapFocus(modal);
 }
+
+/**
+ * Code adapted from https://hiddedevries.nl/en/blog/2017-01-29-using-javascript-to-trap-focus-in-an-element
+ * To ensure modal elements can be accessed by the keyboard as soon as the modal is displayed
+ * @param {*} element Element to trap focus in 
+ */
+
+function trapFocus(element) {
+  const focusableEls = element.querySelectorAll('a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])');
+  const firstFocusableEl = focusableEls[0];
+  const lastFocusableEl = focusableEls[focusableEls.length - 1];
+  firstFocusableEl.focus();
+
+  element.addEventListener('keydown', function (e) {
+    const isTabPressed = (e.key === 'Tab' || e.keyCode === KEYCODE_TAB);
+
+    if (!isTabPressed) {
+      return;
+    }
+
+    if (e.shiftKey) /* shift + tab */ {
+      if (document.activeElement === firstFocusableEl) {
+        lastFocusableEl.focus();
+        e.preventDefault();
+      }
+    } else /* tab */ {
+      if (document.activeElement === lastFocusableEl) {
+        firstFocusableEl.focus();
+        e.preventDefault();
+      }
+    }
+  });
+}
+
 
 /**
  * Return the next visible employee modal index number
@@ -269,7 +306,7 @@ function normaliseCellNumber(cellNumber) {
 function generateEmployeeModal(data) {
   data.map((employee, index) => {
     document.querySelector('body').insertAdjacentHTML('beforeend', `
-      <div class="modal-container" id="employee-${employee.login.uuid}" data-index="${index}">
+      <div class="modal-container" id="employee-${employee.login.uuid}" data-index="${index}" role="dialog">
           <div class="modal">
               <button type="button" id="modal-close-btn" class="modal-close-btn" aria-label="Close this employee modal"><strong>X</strong></button>
               <div class="modal-info-container">
