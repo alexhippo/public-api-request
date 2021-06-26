@@ -100,7 +100,7 @@ function displayEmployeeModal(index) {
     modal.style.display = 'none';
   })
 
-  const modal = document.querySelector(`div.modal-container[data-index="${index}"`);
+  const modal = document.querySelector(`div.modal-container[data-index="${index}"]`);
   modal.style.display = 'block';
   trapFocus(modal);
 }
@@ -110,29 +110,24 @@ function displayEmployeeModal(index) {
  * To ensure modal elements can be accessed by the keyboard as soon as the modal is displayed
  * @param {*} element Element to trap focus in 
  */
-
 function trapFocus(element) {
   const focusableEls = element.querySelectorAll('a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])');
   const firstFocusableEl = focusableEls[0];
   const lastFocusableEl = focusableEls[focusableEls.length - 1];
-  firstFocusableEl.focus();
+  element.focus();
 
   element.addEventListener('keydown', function (e) {
-    const isTabPressed = (e.key === 'Tab' || e.keyCode === KEYCODE_TAB);
-
-    if (!isTabPressed) {
-      return;
-    }
-
-    if (e.shiftKey) /* shift + tab */ {
-      if (document.activeElement === firstFocusableEl) {
-        lastFocusableEl.focus();
-        e.preventDefault();
-      }
-    } else /* tab */ {
-      if (document.activeElement === lastFocusableEl) {
-        firstFocusableEl.focus();
-        e.preventDefault();
+    if (e.key === 'Tab') {
+      if (e.shiftKey) /* shift + tab */ {
+        if (document.activeElement === firstFocusableEl) {
+          lastFocusableEl.focus();
+          e.preventDefault();
+        }
+      } else /* tab */ {
+        if (document.activeElement === lastFocusableEl) {
+          firstFocusableEl.focus();
+          e.preventDefault();
+        }
       }
     }
   });
@@ -306,7 +301,7 @@ function normaliseCellNumber(cellNumber) {
 function generateEmployeeModal(data) {
   data.map((employee, index) => {
     document.querySelector('body').insertAdjacentHTML('beforeend', `
-      <div class="modal-container" id="employee-${employee.login.uuid}" data-index="${index}" role="dialog">
+      <div class="modal-container" id="employee-${employee.login.uuid}" data-index="${index}" role="dialog" tabindex=0>
           <div class="modal">
               <button type="button" id="modal-close-btn" class="modal-close-btn" aria-label="Close this employee modal"><strong>X</strong></button>
               <div class="modal-info-container">
