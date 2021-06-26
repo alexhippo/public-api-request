@@ -58,20 +58,27 @@ fetchData(`https://randomuser.me/api/?results=${numberOfEmployees}&nat=us`)
       card.addEventListener('click', (event) => {
         const clickedIndex = event.currentTarget.dataset.index;
         displayEmployeeModal(clickedIndex);
+      });
 
-        Array.from(document.getElementsByClassName('modal-next')).forEach((nextBtn) => {
-          nextBtn.addEventListener('click', (event) => {
-            // Get the current index from the modal
-            let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
-            displayEmployeeModal(returnNextDataIndex(currentIndex));
-          });
+      card.addEventListener('keyup', (event) => {
+        if ((event.code === 'Enter') || (event.code === 'Space')) {
+          const clickedIndex = event.currentTarget.dataset.index;
+          displayEmployeeModal(clickedIndex);
+        }
+      });
+
+      Array.from(document.getElementsByClassName('modal-next')).forEach((nextBtn) => {
+        nextBtn.addEventListener('click', (event) => {
+          // Get the current index from the modal
+          let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
+          displayEmployeeModal(returnNextDataIndex(currentIndex));
         });
+      });
 
-        Array.from(document.getElementsByClassName('modal-prev')).forEach((prevBtn) => {
-          prevBtn.addEventListener('click', (event) => {
-            let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
-            displayEmployeeModal(returnPreviousDataIndex(currentIndex));
-          });
+      Array.from(document.getElementsByClassName('modal-prev')).forEach((prevBtn) => {
+        prevBtn.addEventListener('click', (event) => {
+          let currentIndex = parseInt(event.currentTarget.parentElement.parentElement.dataset.index);
+          displayEmployeeModal(returnPreviousDataIndex(currentIndex));
         });
       });
     });
