@@ -17,6 +17,11 @@ const searchBar = document.querySelector('#search-input');
 const searchButton = document.querySelector('#search-submit');
 const numberOfEmployees = 12;
 
+// Initial focus on search field for accessibility
+searchBar.focus();
+
+
+
 /**
  * Fetch data from a specified API endpoint
  * @param {String} url - the API endpoint to fetch
@@ -223,7 +228,7 @@ const gallery = document.getElementById('gallery');
 function generateEmployeeGallery(data) {
   data.map((employee, index) => {
     gallery.insertAdjacentHTML('beforeend', `
-      <div class="card visible" id="employee-${employee.login.uuid}" data-index="${index}">
+      <div class="card visible" id="employee-${employee.login.uuid}" data-index="${index}" tabindex=0>
           <div class="card-img-container">
               <img class="card-img" src="${employee.picture.medium}" alt="Profile Picture of ${employee.name.first} ${employee.name.last}">
           </div>

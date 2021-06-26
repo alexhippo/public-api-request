@@ -10,6 +10,8 @@ The following elements were changed from the original styles:
  - font colour of h1 heading to `rgb(255,255,255)`
  - font colour and font weight of h3 No Search Results message 
  - background colour of Previous and Next buttons to `rgb(34, 34, 59)`
+ - removed animation transitions from the Search field, Search button and the Employee Cards
+ - added focus outlines for accessibility
 
 ## Getting started
 ### Downloading
