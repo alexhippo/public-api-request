@@ -30,9 +30,10 @@ header {
 }
 
 header h1 {
-    font-size: 2.25em;
+    font-size: 2.5em;
     color: rgb(255,255,255);
     margin-top: 35px;
+    font-family: 'Staatliches', cursive;
 }
 
 .search-input {
@@ -257,11 +258,10 @@ header h1 {
 
     .header-text-container {
         text-align: left;
-        font-family: 'Staatliches', cursive;
     }
 
     .search-container {
-        margin-top: 25px;
+        margin-top: 40px;
     }
 
     .modal {

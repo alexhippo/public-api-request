@@ -9,13 +9,14 @@
 const searchContainer = document.querySelector('.search-container');
 searchContainer.insertAdjacentHTML('beforeend', `
     <form action="#" method="get">
-    <input type="search" id="search-input" class="search-input" placeholder="Search...">
-    <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit" aria-label="Search for employees">
+    <input type="search" id="search-input" class="search-input" placeholder="Search for employees" aria-label="Search for employees">
+    <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit" aria-label="Search">
     </form>
 `);
 const searchBar = document.querySelector('#search-input');
 const searchButton = document.querySelector('#search-submit');
 const numberOfEmployees = 12;
+const gallery = document.getElementById('gallery');
 
 // Initial focus on search field for accessibility
 searchBar.focus();
@@ -256,6 +257,9 @@ async function searchEmployees(searchInput, employees) {
 * @param {Array} searchResults 
 */
 function showSearchResults(searchResults) {
+  if (document.getElementById('no-search-results')) {
+    document.getElementById('no-search-results').remove();
+  }
   if (searchBar.value) {
     // Hide all employees from the gallery first
     Array.from(gallery.children).forEach((card) => {
@@ -281,13 +285,8 @@ function showSearchResults(searchResults) {
       card.classList.remove('hidden');
       card.classList.add('visible');
     });
-    if (document.getElementById('no-search-results')) {
-      document.getElementById('no-search-results').style.display = 'none';
-    }
   }
 };
-
-const gallery = document.getElementById('gallery');
 
 /**
  * Create cards for each employee and add them to the employee gallery
