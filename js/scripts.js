@@ -20,8 +20,6 @@ const numberOfEmployees = 12;
 // Initial focus on search field for accessibility
 searchBar.focus();
 
-
-
 /**
  * Fetch data from a specified API endpoint
  * @param {String} url - the API endpoint to fetch
@@ -136,11 +134,17 @@ function trapFocus(element, isModal = true) {
 
   element.addEventListener('keydown', function (e) {
     const isTabPressed = (e.key === 'Tab');
+    let currentIndex = parseInt(e.target.dataset.index);
 
-    if (!isTabPressed) {
-      if ((e.key === 'Escape') && isModal) {
+    if (!isTabPressed && isModal) {
+      if (e.key === 'Escape') {
         closeEmployeeModal(element);
-      } else {
+      } else if (e.key === 'ArrowLeft') {
+        displayEmployeeModal(returnPreviousDataIndex(currentIndex));
+      } else if (e.key === 'ArrowRight') {
+        displayEmployeeModal(returnNextDataIndex(currentIndex));
+      }
+      else {
         return;
       }
     }
