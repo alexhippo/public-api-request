@@ -85,13 +85,16 @@ fetchData(`https://randomuser.me/api/?results=${numberOfEmployees}&nat=us`)
 
     Array.from(document.getElementsByClassName('modal-close-btn')).forEach((closeButton) => {
       closeButton.addEventListener('click', (event) => {
-        event.currentTarget.parentElement.parentElement.style.display = 'none';
-      })
+        const modal = event.currentTarget.parentElement.parentElement
+        closeEmployeeModal(modal);
+      });
     });
   });
 
 /**
  * Display the next employee's modal
+ * Also ensure keyboard focus is set to elements on the modal when displayed
+ * and not on the cards in the background
  * @param {Integer} index - data-index of the employee's modal
  */
 function displayEmployeeModal(index) {
@@ -106,33 +109,55 @@ function displayEmployeeModal(index) {
 }
 
 /**
+ * Closes the currently displayed employee's modal
+ * After closing the modal the focus is set to the modal's associated card.
+ * Since focusing on the button is called at the same time as pressing the Enter key
+ * which opens the modal again, a slight delay is added before focusing on the modal's associated card
+ * @param {Element} modal - modal element to close
+ */
+function closeEmployeeModal(modal) {
+  const associatedCardIndex = modal.dataset.index;
+  modal.style.display = 'none';
+  const associatedCard = document.querySelector(`div.card[data-index="${associatedCardIndex}"]`);
+  setTimeout(() => { associatedCard.focus() }, 100);
+}
+
+/**
  * Code adapted from https://hiddedevries.nl/en/blog/2017-01-29-using-javascript-to-trap-focus-in-an-element
  * To ensure modal elements can be accessed by the keyboard as soon as the modal is displayed
- * @param {*} element Element to trap focus in 
+ * @param {Element} element - element to trap focus in 
+ * @param {Boolean} isModal - indicate whether the element to trap focus in is a modal or not. True by default. 
  */
-function trapFocus(element) {
+function trapFocus(element, isModal = true) {
   const focusableEls = element.querySelectorAll('a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])');
   const firstFocusableEl = focusableEls[0];
   const lastFocusableEl = focusableEls[focusableEls.length - 1];
   element.focus();
 
   element.addEventListener('keydown', function (e) {
-    if (e.key === 'Tab') {
-      if (e.shiftKey) /* shift + tab */ {
-        if (document.activeElement === firstFocusableEl) {
-          lastFocusableEl.focus();
-          e.preventDefault();
-        }
-      } else /* tab */ {
-        if (document.activeElement === lastFocusableEl) {
-          firstFocusableEl.focus();
-          e.preventDefault();
-        }
+    const isTabPressed = (e.key === 'Tab');
+
+    if (!isTabPressed) {
+      if ((e.key === 'Escape') && isModal) {
+        closeEmployeeModal(element);
+      } else {
+        return;
+      }
+    }
+
+    if (e.shiftKey) /* shift + tab */ {
+      if (document.activeElement === firstFocusableEl) {
+        lastFocusableEl.focus();
+        e.preventDefault();
+      }
+    } else /* tab */ {
+      if (document.activeElement === lastFocusableEl) {
+        firstFocusableEl.focus();
+        e.preventDefault();
       }
     }
   });
 }
-
 
 /**
  * Return the next visible employee modal index number
