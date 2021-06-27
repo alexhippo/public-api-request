@@ -84,7 +84,7 @@ fetchData(`https://randomuser.me/api/?results=${numberOfEmployees}&nat=us`)
 
     Array.from(document.getElementsByClassName('modal-close-btn')).forEach((closeButton) => {
       closeButton.addEventListener('click', (event) => {
-        const modal = event.currentTarget.parentElement.parentElement
+        const modal = event.currentTarget.parentElement.parentElement;
         closeEmployeeModal(modal);
       });
     });
@@ -97,7 +97,7 @@ fetchData(`https://randomuser.me/api/?results=${numberOfEmployees}&nat=us`)
  * @param {Integer} index - data-index of the employee's modal
  */
 function displayEmployeeModal(index) {
-  // Close any other existing modals first
+  // Hide any other existing modals first
   Array.from(document.querySelectorAll(`div.modal-container`)).forEach((modal) => {
     modal.style.display = 'none';
   })
@@ -115,8 +115,8 @@ function displayEmployeeModal(index) {
  * @param {Element} modal - modal element to close
  */
 function closeEmployeeModal(modal) {
-  const associatedCardIndex = modal.dataset.index;
   modal.style.display = 'none';
+  const associatedCardIndex = modal.dataset.index;
   const associatedCard = document.querySelector(`div.card[data-index="${associatedCardIndex}"]`);
   setTimeout(() => { associatedCard.focus() }, 100);
 }
@@ -310,7 +310,7 @@ function generateEmployeeGallery(data) {
 };
 
 /**
- * Reformat cell number into desired format
+ * Reformat cell number into expected format
  * @param {String} cellNumber - cell number to format
  * @returns {String} cellNumber
  */
