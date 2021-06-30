@@ -340,7 +340,7 @@ function generateEmployeeModal(data) {
                   <hr>
                   <p class="modal-text">${normaliseCellNumber(employee.cell)}</p>
                   <p class="modal-text">${employee.location.street.number} ${employee.location.street.name}, ${employee.location.city}, ${employee.location.state} ${employee.location.postcode}</p>
-                  <p class="modal-text">Birthday: ${new Date(employee.dob.date).toLocaleDateString('en-US')}</p>
+                  <p class="modal-text">Birthday: ${new Date(employee.dob.date).toLocaleDateString('en-US', { year: "numeric", month: "2-digit", day: "2-digit" })}</p>
               </div>
           </div>
           <div class="modal-btn-container">
